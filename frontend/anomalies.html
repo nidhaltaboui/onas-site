@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anomalies - ONAS Supervision</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/chart.umd.min.js"></script>
+</head>
+<body>
+  <div id="navbar-container"></div>
+
+  <main class="page">
+    <h1 class="titre-page">Anomalies détectées</h1>
+    <p class="sous-titre">Surveillance automatique des équipements : les écarts inhabituels sont signalés ici, avec leur niveau d'importance.</p>
+
+    <div class="grille-cartes" id="cartes-resume"></div>
+
+    <div class="carte">
+      <canvas id="graphique-anomalies" height="90"></canvas>
+    </div>
+
+    <div class="carte">
+      <table class="tableau-anomalies">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Équipement</th>
+            <th>Indicateur</th>
+            <th>Écart observé</th>
+            <th>Comportement</th>
+            <th>Importance</th>
+          </tr>
+        </thead>
+        <tbody id="corps-tableau"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/navbar.js"></script>
+  <script>
+    exigerConnexion();
+    chargerNavbar("anomalies.html");
+
+    const LABELS_SERIE = {
+      debit_m3: "Débit",
+      charge_kg: "Charge organique",
+      energie_kwh: "Énergie",
+      boues_m3: "Boues",
+    };
+
+    const LABELS_TYPE = {
+      rupture: "Changement brutal",
+      transition: "Évolution progressive",
+    };
+
+    const LABELS_SEVERITE = {
+      haute: "Important",
+      moyenne: "À surveiller",
+    };
+
+    let graphique;
+
+    function afficherGraphique(anomalies) {
+      // Regroupe le nombre d'anomalies par série, séparées haute/moyenne sévérité
+      const series = ["debit_m3", "charge_kg", "energie_kwh", "boues_m3"];
+      const compteHaute = series.map(
+        (s) => anomalies.filter((a) => a.serie === s && a.severite === "haute").length
+      );
+      const compteMoyenne = series.map(
+        (s) => anomalies.filter((a) => a.serie === s && a.severite === "moyenne").length
+      );
+
+      if (graphique) graphique.destroy();
+      const ctx = document.getElementById("graphique-anomalies").getContext("2d");
+      graphique = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: series.map((s) => LABELS_SERIE[s] || s),
+          datasets: [
+            {
+              label: "Sévérité haute",
+              data: compteHaute,
+              backgroundColor: "#d64545",
+            },
+            {
+              label: "Sévérité moyenne",
+              data: compteMoyenne,
+              backgroundColor: "#e0a83e",
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { position: "bottom" } },
+          scales: {
+            x: { stacked: true },
+            y: { stacked: true, title: { display: true, text: "Nombre d'anomalies" }, ticks: { precision: 0 } },
+          },
+        },
+      });
+    }
+
+    async function chargerAnomalies() {
+      const data = await appelApi("/api/anomalies?limite=40");
+
+      document.getElementById("cartes-resume").innerHTML = `
+        <div class="stat-carte">
+          <div class="valeur">${data.resume.total}</div>
+          <div class="label">Anomalies détectées</div>
+        </div>
+        <div class="stat-carte" style="border-left-color:#d64545;">
+          <div class="valeur">${data.resume.haute_severite}</div>
+          <div class="label">Importantes</div>
+        </div>
+        <div class="stat-carte" style="border-left-color:#b8860b;">
+          <div class="valeur">${data.resume.moyenne_severite}</div>
+          <div class="label">À surveiller</div>
+        </div>
+      `;
+
+      afficherGraphique(data.anomalies);
+
+      const corps = document.getElementById("corps-tableau");
+      corps.innerHTML = data.anomalies
+        .map(
+          (a) => `
+        <tr>
+          <td>${a.date}</td>
+          <td>${a.equipement}</td>
+          <td>${LABELS_SERIE[a.serie] || a.serie}</td>
+          <td>${a.ecart_pct > 0 ? "+" : ""}${a.ecart_pct}%</td>
+          <td>${LABELS_TYPE[a.type_anomalie] || a.type_anomalie}</td>
+          <td><span class="badge ${a.severite}">${LABELS_SEVERITE[a.severite] || a.severite}</span></td>
+        </tr>
+      `
+        )
+        .join("");
+    }
+
+    chargerAnomalies().catch((err) => alert(err.message));
+  </script>
+</body>
+</html>

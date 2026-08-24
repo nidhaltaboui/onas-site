@@ -1,0 +1,271 @@
+:root {
+  --bleu-principal: #005BAC;
+  --bleu-fonce: #003d73;
+  --bleu-clair: #e8f1fb;
+  --gris-fond: #f4f6f9;
+  --gris-texte: #333;
+  --rouge-alerte: #d64545;
+  --vert-ok: #2e9e5b;
+  --ombre: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: var(--gris-fond);
+  color: var(--gris-texte);
+}
+
+/* ---------- Barre de navigation ---------- */
+.navbar {
+  background: var(--bleu-principal);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 2rem;
+  box-shadow: var(--ombre);
+}
+
+.navbar .logo {
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
+}
+
+.navbar nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.navbar nav a {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.navbar nav a:hover,
+.navbar nav a.active {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.navbar .user-zone {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.9rem;
+}
+
+.navbar .btn-logout {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: white;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+.navbar .btn-logout:hover { background: rgba(255, 255, 255, 0.3); }
+
+/* ---------- Conteneur principal ---------- */
+main.page {
+  max-width: 1280px;
+  margin: 2rem auto;
+  padding: 0 1.5rem 3rem;
+}
+
+h1.titre-page {
+  color: var(--bleu-fonce);
+  margin-bottom: 0.3rem;
+}
+
+p.sous-titre {
+  color: #666;
+  margin-top: 0;
+  margin-bottom: 2rem;
+}
+
+/* ---------- Cartes ---------- */
+.carte {
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--ombre);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.grille-cartes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.stat-carte {
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--ombre);
+  padding: 1.3rem;
+  border-left: 5px solid var(--bleu-principal);
+}
+.stat-carte .valeur { font-size: 1.8rem; font-weight: 700; color: var(--bleu-fonce); }
+.stat-carte .label { color: #777; font-size: 0.9rem; margin-top: 0.2rem; }
+
+/* ---------- Page de login ---------- */
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(0,61,115,0.25), rgba(0,91,172,0.15)),
+    url("../img/station-sahline.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.login-box {
+  background: rgba(255, 255, 255, 0.97);
+  padding: 2.5rem 2.5rem 2rem;
+  border-radius: 14px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+  width: 100%;
+  max-width: 380px;
+}
+
+.login-box h1 {
+  text-align: center;
+  color: var(--bleu-fonce);
+  margin-bottom: 0.2rem;
+  font-size: 1.4rem;
+}
+
+.login-box .sous-titre-login {
+  text-align: center;
+  color: #888;
+  font-size: 0.85rem;
+  margin-bottom: 1.8rem;
+}
+
+.champ {
+  margin-bottom: 1.1rem;
+}
+.champ label {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
+  color: #555;
+}
+.champ input {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+.champ input:focus {
+  outline: none;
+  border-color: var(--bleu-principal);
+  box-shadow: 0 0 0 3px var(--bleu-clair);
+}
+
+.btn-principal {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--bleu-principal);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-principal:hover { background: var(--bleu-fonce); }
+
+.lien-secondaire {
+  display: block;
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--bleu-principal);
+  text-decoration: none;
+}
+.lien-secondaire:hover { text-decoration: underline; }
+
+.message {
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  display: none;
+}
+.message.erreur { background: #fdecea; color: var(--rouge-alerte); display: block; }
+.message.succes { background: #e9f7ef; color: var(--vert-ok); display: block; }
+
+/* ---------- Dashboards Power BI ---------- */
+.iframe-wrapper {
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--ombre);
+  padding: 1rem;
+  overflow: hidden;
+}
+.iframe-wrapper iframe {
+  width: 100%;
+  height: 75vh;
+  min-height: 500px;
+  border: none;
+  border-radius: 8px;
+}
+
+/* ---------- Tableaux ---------- */
+table.tableau-anomalies {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+}
+table.tableau-anomalies th {
+  background: var(--bleu-principal);
+  color: white;
+  text-align: left;
+  padding: 0.7rem 1rem;
+  font-size: 0.85rem;
+}
+table.tableau-anomalies td {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+}
+table.tableau-anomalies tr:hover { background: var(--gris-fond); }
+
+.badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.badge.haute { background: #fdecea; color: var(--rouge-alerte); }
+.badge.moyenne { background: #fff6e0; color: #b8860b; }
+
+.selecteur-serie {
+  margin-bottom: 1.5rem;
+}
+.selecteur-serie select {
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
+footer.pied-page {
+  text-align: center;
+  color: #999;
+  font-size: 0.8rem;
+  padding: 2rem 0 1rem;
+}

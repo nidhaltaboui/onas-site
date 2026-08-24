@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboards - ONAS Supervision</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div id="navbar-container"></div>
+
+  <main class="page">
+    <h1 class="titre-page">Tableaux de bord Power BI</h1>
+    <p class="sous-titre">Vue d'ensemble de l'exploitation de la station (débit, charge, énergie, boues).</p>
+
+    <!--
+      ⚙️ CONFIGURATION : nom de la page à afficher en premier
+      ============================================================
+      Par défaut, Power BI ouvre le rapport sur la DERNIÈRE page consultée
+      ou sur "Données sources". Pour forcer l'ouverture sur "Accueil",
+      remplissez la variable POWERBI_PAGE_NAME juste en dessous.
+
+      Comment trouver la valeur exacte à mettre :
+        1. Allez sur https://app.powerbi.com et ouvrez le rapport "Dashbords_Onas"
+        2. Cliquez sur l'onglet de la page "Accueil" pour l'afficher
+        3. Regardez l'URL dans la barre d'adresse du navigateur, elle ressemble à :
+           .../reports/7aff1aa4-.../ReportSection4b8e1234567890
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+                                     C'est CETTE partie qu'il faut copier
+        4. Collez-la ci-dessous entre guillemets, à la place de null.
+    -->
+    <script>
+      const POWERBI_PAGE_NAME = "72b3b24e3be0d8b41e53";
+    </script>
+
+    <div class="iframe-wrapper">
+      <iframe
+        title="Dashbords_Onas"
+        id="iframe-powerbi"
+        frameborder="0"
+        allowFullScreen="true"
+      ></iframe>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/navbar.js"></script>
+  <script>
+    exigerConnexion();
+    chargerNavbar("dashboards.html");
+
+    const urlBase =
+      "https://app.powerbi.com/reportEmbed?reportId=7aff1aa4-0ecd-41a6-973f-83184e740315" +
+      "&autoAuth=true&ctid=604f1a96-cbe8-43f8-abbf-f8eaf5d85730" +
+      "&filterPaneEnabled=false&navContentPaneEnabled=false&pageNavigationEnabled=false";
+
+    document.getElementById("iframe-powerbi").src = POWERBI_PAGE_NAME
+      ? `${urlBase}&pageName=${POWERBI_PAGE_NAME}`
+      : urlBase;
+  </script>
+</body>
+</html>

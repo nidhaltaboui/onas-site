@@ -1,0 +1,11 @@
+# Environnement Python
+venv/
+__pycache__/
+*.pyc
+
+# Secrets - NE JAMAIS pousser sur GitHub
+backend/.env
+
+# OS
+.DS_Store
+Thumbs.db

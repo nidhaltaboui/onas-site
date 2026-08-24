@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prédiction - ONAS Supervision</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="js/chart.umd.min.js"></script>
+</head>
+<body>
+  <div id="navbar-container"></div>
+
+  <main class="page">
+    <h1 class="titre-page">Prévisions 2026</h1>
+    <p class="sous-titre">Estimation de l'évolution attendue pour chaque indicateur au cours de l'année.</p>
+
+    <div class="selecteur-serie">
+      <label for="select-serie" style="margin-right:0.6rem;font-size:0.9rem;color:#555;">Série à afficher :</label>
+      <select id="select-serie"></select>
+    </div>
+
+    <div class="grille-cartes" id="cartes-stats"></div>
+
+    <div class="carte">
+      <canvas id="graphique-prevision" height="90"></canvas>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/navbar.js"></script>
+  <script>
+    exigerConnexion();
+    chargerNavbar("prediction.html");
+
+    let graphique;
+    let toutesLesSeries = {};
+
+    async function chargerDonnees() {
+      const data = await appelApi("/api/predictions");
+      toutesLesSeries = data.series;
+
+      const select = document.getElementById("select-serie");
+      select.innerHTML = Object.entries(toutesLesSeries)
+        .map(([code, infos]) => `<option value="${code}">${infos.label}</option>`)
+        .join("");
+
+      select.addEventListener("change", () => afficherSerie(select.value));
+      afficherSerie(select.value);
+    }
+
+    function afficherSerie(code) {
+      const serie = toutesLesSeries[code];
+      if (!serie) return;
+
+      // ---- Cartes statistiques ----
+      const valeurs = serie.valeurs.map((v) => v.valeur_predite);
+      const moyenne = (valeurs.reduce((a, b) => a + b, 0) / valeurs.length).toFixed(1);
+      const max = Math.max(...valeurs);
+      const min = Math.min(...valeurs);
+
+      document.getElementById("cartes-stats").innerHTML = `
+        <div class="stat-carte">
+          <div class="valeur">${moyenne}</div>
+          <div class="label">Valeur moyenne attendue (${serie.unite})</div>
+        </div>
+        <div class="stat-carte">
+          <div class="valeur">${max}</div>
+          <div class="label">Le plus haut prévu (${serie.unite})</div>
+        </div>
+        <div class="stat-carte">
+          <div class="valeur">${min}</div>
+          <div class="label">Le plus bas prévu (${serie.unite})</div>
+        </div>
+      `;
+
+      // ---- Graphique ----
+      const labels = serie.valeurs.map((v) => v.mois);
+      const dataPred = serie.valeurs.map((v) => v.valeur_predite);
+      const dataMin = serie.valeurs.map((v) => v.borne_min);
+      const dataMax = serie.valeurs.map((v) => v.borne_max);
+
+      if (graphique) graphique.destroy();
+      const ctx = document.getElementById("graphique-prevision").getContext("2d");
+      graphique = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels,
+          datasets: [
+            {
+              label: `${serie.label}`,
+              data: dataPred,
+              borderColor: "#005BAC",
+              backgroundColor: "rgba(0,91,172,0.1)",
+              fill: true,
+              tension: 0.3,
+            },
+            {
+              label: "Estimation haute",
+              data: dataMax,
+              borderColor: "rgba(0,91,172,0.25)",
+              borderDash: [5, 5],
+              pointRadius: 0,
+              fill: false,
+            },
+            {
+              label: "Estimation basse",
+              data: dataMin,
+              borderColor: "rgba(0,91,172,0.25)",
+              borderDash: [5, 5],
+              pointRadius: 0,
+              fill: false,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { position: "bottom" } },
+          scales: { y: { title: { display: true, text: serie.unite } } },
+        },
+      });
+    }
+
+    chargerDonnees().catch((err) => alert(err.message));
+  </script>
+</body>
+</html>
