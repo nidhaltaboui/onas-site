@@ -9,3 +9,5 @@ backend/.env
 # OS
 .DS_Store
 Thumbs.db
+machine_learning/.env
+machine_learning/.ipynb_checkpoints/
