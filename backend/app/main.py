@@ -26,7 +26,7 @@ app.include_router(prediction_router.router)
 app.include_router(anomaly_router.router)
 
 # ==== Sert le frontend (HTML/CSS/JS) directement depuis FastAPI ====
-FRONTEND_DIR = Path(__file__).resolve().parent.parent.parent / "frontend"
+FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
 
 if FRONTEND_DIR.exists():
     app.mount("/", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
