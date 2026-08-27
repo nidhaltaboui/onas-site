@@ -23,10 +23,10 @@ MOIS_FR = [
 ]
 
 SERIES = {
-    "debit_m3": {"label": "Débit (m³/jour)", "base": 3200, "unite": "m³/j"},
+    "debit_m3": {"label": "Débit (m3/jour)", "base": 3200, "unite": "m3/j"},
     "charge_kg": {"label": "Charge organique (kg/j)", "base": 850, "unite": "kg/j"},
     "energie_kwh": {"label": "Énergie consommée (kWh)", "base": 42000, "unite": "kWh"},
-    "boues_m3": {"label": "Boues produites (m³)", "base": 610, "unite": "m³"},
+    "boues_m3": {"label": "Boues produites (m3)", "base": 610, "unite": "m3"},
 }
 
 
@@ -42,8 +42,20 @@ def charger_previsions_depuis_bd():
     resultat = {}
     for code, infos in SERIES.items():
         valeurs = []
+        historique_2025 = []
         base = infos["base"]
         for i, mois in enumerate(MOIS_FR):
+            # ---- Valeur réelle 2025 (à remplacer par une vraie requête SQL) ----
+            saisonnalite_reelle = 1 + 0.06 * random.uniform(-1, 1)
+            valeur_reelle = round(base * saisonnalite_reelle, 1)
+            historique_2025.append(
+                {
+                    "mois": mois,
+                    "valeur_reelle": valeur_reelle,
+                }
+            )
+
+            # ---- Prévision 2026 ----
             tendance = base * (1 + 0.01 * i)
             saisonnalite = 1 + 0.08 * random.uniform(-1, 1)
             valeur = round(tendance * saisonnalite, 1)
@@ -60,6 +72,7 @@ def charger_previsions_depuis_bd():
             "label": infos["label"],
             "unite": infos["unite"],
             "valeurs": valeurs,
+            "historique_2025": historique_2025,
         }
     return resultat
 

@@ -78,6 +78,7 @@
       const dataPred = serie.valeurs.map((v) => v.valeur_predite);
       const dataMin = serie.valeurs.map((v) => v.borne_min);
       const dataMax = serie.valeurs.map((v) => v.borne_max);
+      const dataReel2025 = serie.historique_2025.map((v) => v.valeur_reelle);
 
       if (graphique) graphique.destroy();
       const ctx = document.getElementById("graphique-prevision").getContext("2d");
@@ -86,6 +87,15 @@
         data: {
           labels,
           datasets: [
+            {
+              label: "Réel 2025",
+              data: dataReel2025,
+              borderColor: "#6c757d",
+              backgroundColor: "rgba(108,117,125,0.08)",
+              borderDash: [2, 2],
+              fill: false,
+              tension: 0.3,
+            },
             {
               label: `${serie.label}`,
               data: dataPred,

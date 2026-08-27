@@ -19,6 +19,11 @@ router = APIRouter(prefix="/api/anomalies", tags=["Anomalies"])
 EQUIPEMENTS = ["Pompe P1", "Pompe P2", "Aérateur A1", "Dégrilleur D1", "Décanteur D2"]
 SERIES = ["debit_m3", "charge_kg", "energie_kwh", "boues_m3"]
 
+# Les anomalies sont détectées sur les données réelles de l'année 2025
+DATE_DEBUT_2025 = date(2025, 1, 1)
+DATE_FIN_2025 = date(2025, 12, 31)
+PLAGE_JOURS_2025 = (DATE_FIN_2025 - DATE_DEBUT_2025).days
+
 
 def charger_anomalies_depuis_bd(limite: int = 30):
     """
@@ -27,10 +32,9 @@ def charger_anomalies_depuis_bd(limite: int = 30):
     Pour l'instant : génère des exemples réalistes.
     """
     random.seed(7)
-    aujourdhui = date.today()
     anomalies = []
     for i in range(limite):
-        jour = aujourdhui - timedelta(days=random.randint(0, 180))
+        jour = DATE_DEBUT_2025 + timedelta(days=random.randint(0, PLAGE_JOURS_2025))
         serie = random.choice(SERIES)
         z_score = round(random.uniform(2.0, 4.5) * random.choice([-1, 1]), 2)
         type_anomalie = "rupture" if abs(z_score) > 3.2 else "transition"
